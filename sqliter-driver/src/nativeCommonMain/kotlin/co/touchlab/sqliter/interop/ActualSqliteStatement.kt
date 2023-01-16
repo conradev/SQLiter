@@ -123,7 +123,8 @@ internal class ActualSqliteStatement(private val db: SqliteDatabase, private val
     }
 
     override fun bindBlob(index: Int, value: ByteArray) = opResult(db) {
-        sqlite3_bind_blob(stmtPointer, index, value.refTo(0), value.size, SQLITE_TRANSIENT)
+        if (value.isNotEmpty()) sqlite3_bind_blob(stmtPointer, index, value.refTo(0), value.size, SQLITE_TRANSIENT)
+        else sqlite3_bind_zeroblob(stmtPointer, index, 0)
     }
 
     private inline fun opResult(db: SqliteDatabase, block: () -> Int) {
